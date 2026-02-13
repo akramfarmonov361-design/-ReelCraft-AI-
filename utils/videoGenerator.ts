@@ -36,6 +36,72 @@ const getWrappedLines = (context: CanvasRenderingContext2D, text: string, maxWid
     return lines;
 }
 
+interface AnimationParams {
+    startScale: number;
+    endScale: number;
+    startPanX: number;
+    endPanX: number;
+    startPanY: number;
+    endPanY: number;
+}
+
+const generateAnimationParams = (): AnimationParams => {
+    const types = ['zoomIn', 'zoomOut', 'panLeft', 'panRight', 'panUp', 'panDown'];
+    const type = types[Math.floor(Math.random() * types.length)];
+
+    // Increased intensity for "kuchliroq" animations
+    // Safety buffer: never go below 1.15 scale to avoid black edges when panning
+    const minSafeScale = 1.15;
+    const maxSafeScale = 1.6;
+    let startScale = minSafeScale;
+    let endScale = minSafeScale;
+    let startPanX = 0;
+    let endPanX = 0;
+    let startPanY = 0;
+    let endPanY = 0;
+
+    switch (type) {
+        case 'zoomIn':
+            startScale = minSafeScale;
+            endScale = maxSafeScale;
+            // Gentle drift during zoom
+            startPanX = (Math.random() - 0.5) * 0.02;
+            endPanX = (Math.random() - 0.5) * 0.02;
+            break;
+        case 'zoomOut':
+            startScale = maxSafeScale;
+            endScale = minSafeScale;
+            startPanX = (Math.random() - 0.5) * 0.02;
+            endPanX = (Math.random() - 0.5) * 0.02;
+            break;
+        case 'panLeft':
+            startScale = 1.4;
+            endScale = 1.4;
+            startPanX = 0.1;
+            endPanX = -0.1;
+            break;
+        case 'panRight':
+            startScale = 1.4;
+            endScale = 1.4;
+            startPanX = -0.1;
+            endPanX = 0.1;
+            break;
+        case 'panUp':
+            startScale = 1.4;
+            endScale = 1.4;
+            startPanY = 0.1;
+            endPanY = -0.1;
+            break;
+        case 'panDown':
+            startScale = 1.4;
+            endScale = 1.4;
+            startPanY = -0.1;
+            endPanY = 0.1;
+            break;
+    }
+    return { startScale, endScale, startPanX, endPanX, startPanY, endPanY };
+};
+
 export const createVideoFromReelContent = async (
     imageUrls: string[],
     audioB64: string,
@@ -103,6 +169,9 @@ export const createVideoFromReelContent = async (
             return img;
         }
     });
+
+    // Generate random animations for each image segment
+    const animations = processedImages.map(() => generateAnimationParams());
 
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
     const destination = audioContext.createMediaStreamDestination();
@@ -208,8 +277,6 @@ export const createVideoFromReelContent = async (
             return;
         }
 
-        const progress = Math.min(elapsedTime / duration, 1);
-
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, width, height);
 
@@ -220,14 +287,21 @@ export const createVideoFromReelContent = async (
 
         // Safeguard to prevent crash if an image is missing
         if (image) {
-            const scale = 1.2;
-            const panRange = 0.08;
-            const panAmount = -panRange + (2 * panRange * progress);
+            // Calculate progress within this specific image (0 to 1)
+            const currentSegmentStart = currentImageIndex * segmentDuration;
+            const segmentProgress = Math.min(Math.max((elapsedTime - currentSegmentStart) / segmentDuration, 0), 1);
+
+            const anim = animations[currentImageIndex] || { startScale: 1.2, endScale: 1.2, startPanX: 0, endPanX: 0, startPanY: 0, endPanY: 0 };
+
+            // Linear interpolation using segmentProgress
+            const scale = anim.startScale + (anim.endScale - anim.startScale) * segmentProgress;
+            const panX = anim.startPanX + (anim.endPanX - anim.startPanX) * segmentProgress;
+            const panY = anim.startPanY + (anim.endPanY - anim.startPanY) * segmentProgress;
 
             ctx.save();
             ctx.translate(width / 2, height / 2);
             ctx.scale(scale, scale);
-            ctx.translate(panAmount * width, panAmount * height);
+            ctx.translate(panX * width, panY * height);
 
             // Draw the pre-processed image (which is already 1080p/720p)
             // If it's the original image (fallback), we let the browser handle scaling (slower)
@@ -264,7 +338,8 @@ export const createVideoFromReelContent = async (
         const activeSubtitle = timedScript.find(chunk => elapsedTime >= chunk.start && elapsedTime < chunk.end);
         if (activeSubtitle && activeSubtitle.words && activeSubtitle.words.length > 0) {
             const sFont = subtitleStyle?.fontFamily || 'sans-serif';
-            const sFontSize = subtitleStyle?.fontSize ? Math.round(subtitleStyle.fontSize * (width / 1080) * 1.8) : 70;
+            // Reduced multiplier (1.8 -> 1.4) and default size (70 -> 55) to prevent covering too much screen
+            const sFontSize = subtitleStyle?.fontSize ? Math.round(subtitleStyle.fontSize * (width / 1080) * 1.4) : 55;
             ctx.font = `bold ${sFontSize}px ${sFont}`;
             ctx.textBaseline = 'top';
             ctx.textAlign = 'left';
@@ -273,7 +348,7 @@ export const createVideoFromReelContent = async (
             ctx.shadowOffsetX = 3;
             ctx.shadowOffsetY = 3;
 
-            const subtitleMaxWidth = width * 0.9;
+            const subtitleMaxWidth = width * 0.8; // Reduced width (90% -> 80%)
             const subtitleLineHeight = sFontSize + 10;
 
             // Check if we need to recalculate layout

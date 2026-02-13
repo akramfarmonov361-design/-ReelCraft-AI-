@@ -12,6 +12,17 @@ import { TrendingTopicsModal } from './components/TrendingTopicsModal';
 import { decodeAndGetAudioBuffer } from './utils/audioUtils';
 import { logoB64 } from './assets/logo';
 
+const MAX_WORDS_PER_SUBTITLE = 4;
+
+const splitIntoChunks = (text: string, maxWords: number): string[] => {
+    const words = text.split(' ');
+    const chunks: string[] = [];
+    for (let i = 0; i < words.length; i += maxWords) {
+        chunks.push(words.slice(i, i + maxWords).join(' '));
+    }
+    return chunks;
+};
+
 const DEFAULT_SUBTITLE_STYLE: SubtitleStyle = {
     fontFamily: 'Arial, sans-serif',
     fontSize: 36,
@@ -210,10 +221,11 @@ const App: React.FC = () => {
             const { duration } = await decodeAndGetAudioBuffer(currentAudioB64, audioContextForDuration);
             await audioContextForDuration.close();
 
-            const totalChars = newScript.reduce((acc, line) => acc + line.length, 0);
+            const processedScript = newScript.flatMap(line => splitIntoChunks(line, MAX_WORDS_PER_SUBTITLE));
+            const totalChars = processedScript.reduce((acc, line) => acc + line.length, 0);
             const charsPerSecond = totalChars > 0 ? totalChars / duration : 10;
             let currentTime = 0;
-            const timedScript: TimedScriptChunk[] = newScript.map(line => {
+            const timedScript: TimedScriptChunk[] = processedScript.map(line => {
                 const lineDuration = line.length / charsPerSecond;
                 const words = line.split(' ').filter(w => w.length > 0);
                 let wordStartTime = currentTime;
@@ -391,10 +403,11 @@ const App: React.FC = () => {
                 const { duration } = await decodeAndGetAudioBuffer(currentAudioB64, audioContextForDuration);
                 await audioContextForDuration.close();
 
-                const totalChars = currentScript.reduce((acc, line) => acc + line.length, 0);
+                const processedScript = currentScript.flatMap(line => splitIntoChunks(line, MAX_WORDS_PER_SUBTITLE));
+                const totalChars = processedScript.reduce((acc, line) => acc + line.length, 0);
                 const charsPerSecond = totalChars > 0 ? totalChars / duration : 10;
                 let currentTime = 0;
-                const timedScript: TimedScriptChunk[] = currentScript.map(line => {
+                const timedScript: TimedScriptChunk[] = processedScript.map(line => {
                     const lineDuration = line.length / charsPerSecond;
                     const words = line.split(' ').filter(w => w.length > 0);
                     let wordStartTime = currentTime;

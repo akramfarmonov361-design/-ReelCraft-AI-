@@ -79,8 +79,8 @@ export const SubtitleStylePicker: React.FC<SubtitleStylePickerProps> = ({ style,
                 <label className="block text-xs text-slate-400 mb-1.5">O'lcham: {style.fontSize}px</label>
                 <input
                     type="range"
-                    min="24"
-                    max="60"
+                    min="20"
+                    max="50"
                     value={style.fontSize}
                     onChange={(e) => update({ fontSize: parseInt(e.target.value) })}
                     className="w-full accent-indigo-500"

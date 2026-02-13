@@ -147,11 +147,17 @@ export const createVideoFromReelContent = async (
     const FPS = 30;
     const frameInterval = 1000 / FPS;
 
+    // Cache for subtitle layout to avoid expensive measureText every frame
+    let lastSubtitleChunk: TimedScriptChunk | null = null;
+    let cachedWrappedLines: WordTiming[][] = [];
+    let cachedSubtitleBlockStartY: number = 0;
+
     const drawFrame = () => {
         // Calculate elapsed time relative to when audio actually started
         const elapsedTime = audioContext.currentTime - audioStartTime;
 
-        if (elapsedTime >= duration || recorder.state !== 'recording') {
+        // Add 0.5s buffer to ensure video doesn't cut off early (audio longer than video fix)
+        if (elapsedTime >= duration + 0.5 || recorder.state !== 'recording') {
             clearInterval(frameTimer);
             if (recorder.state === 'recording') {
                 recorder.stop();
@@ -164,7 +170,7 @@ export const createVideoFromReelContent = async (
             return;
         }
 
-        const progress = elapsedTime / duration;
+        const progress = Math.min(elapsedTime / duration, 1);
 
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, width, height);
@@ -226,22 +232,31 @@ export const createVideoFromReelContent = async (
             const subtitleMaxWidth = width * 0.9;
             const subtitleLineHeight = sFontSize + 10;
 
-            let lineBuffer: WordTiming[] = [];
-            const wrappedLines: WordTiming[][] = [];
-            for (const wordData of activeSubtitle.words) {
-                const currentLineText = lineBuffer.map(w => w.word).join(' ');
-                const testLine = currentLineText ? `${currentLineText} ${wordData.word}` : wordData.word;
-                if (ctx.measureText(testLine).width > subtitleMaxWidth && lineBuffer.length > 0) {
-                    wrappedLines.push(lineBuffer);
-                    lineBuffer = [wordData];
-                } else {
-                    lineBuffer.push(wordData);
+            // Check if we need to recalculate layout
+            if (activeSubtitle !== lastSubtitleChunk) {
+                let lineBuffer: WordTiming[] = [];
+                const wrappedLines: WordTiming[][] = [];
+                for (const wordData of activeSubtitle.words) {
+                    const currentLineText = lineBuffer.map(w => w.word).join(' ');
+                    const testLine = currentLineText ? `${currentLineText} ${wordData.word}` : wordData.word;
+                    if (ctx.measureText(testLine).width > subtitleMaxWidth && lineBuffer.length > 0) {
+                        wrappedLines.push(lineBuffer);
+                        lineBuffer = [wordData];
+                    } else {
+                        lineBuffer.push(wordData);
+                    }
                 }
-            }
-            wrappedLines.push(lineBuffer);
+                wrappedLines.push(lineBuffer);
 
-            const totalSubtitleHeight = wrappedLines.length * subtitleLineHeight;
-            const subtitleBlockStartY = height * 0.75 - totalSubtitleHeight / 2;
+                const totalSubtitleHeight = wrappedLines.length * subtitleLineHeight;
+                // Cache the results
+                cachedWrappedLines = wrappedLines;
+                cachedSubtitleBlockStartY = height * 0.75 - totalSubtitleHeight / 2;
+                lastSubtitleChunk = activeSubtitle;
+            }
+
+            const wrappedLines = cachedWrappedLines;
+            const subtitleBlockStartY = cachedSubtitleBlockStartY;
 
             // Draw background behind subtitles if enabled
             if (subtitleStyle?.bgEnabled) {
@@ -273,6 +288,12 @@ export const createVideoFromReelContent = async (
                     currentX += ctx.measureText(wordData.word + ' ').width;
                 }
             });
+        } else {
+            // Reset cache if no active subtitle
+            if (lastSubtitleChunk !== null) {
+                lastSubtitleChunk = null;
+                cachedWrappedLines = [];
+            }
         }
         ctx.restore();
     };

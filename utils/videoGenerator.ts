@@ -66,6 +66,44 @@ export const createVideoFromReelContent = async (
 
     const duration = audioBuffer.duration;
 
+    // Pre-process images: Optimization to avoid expensive scaling every frame
+    // We create offscreen canvases with the exact target dimensions
+    const processedImages = imagesOrNulls.map((img) => {
+        if (!img) return null;
+
+        try {
+            const offscreen = document.createElement('canvas');
+            offscreen.width = width;
+            offscreen.height = height;
+            const oCtx = offscreen.getContext('2d');
+            if (!oCtx) return img;
+
+            const imgRatio = img.width / img.height;
+            const canvasRatio = width / height;
+            let sw, sh, sx, sy;
+
+            // Calculate center crop to fill the screen
+            if (imgRatio > canvasRatio) {
+                sh = img.height;
+                sw = sh * canvasRatio;
+                sx = (img.width - sw) / 2;
+                sy = 0;
+            } else {
+                sw = img.width;
+                sh = sw / canvasRatio;
+                sx = 0;
+                sy = (img.height - sh) / 2;
+            }
+
+            // Draw cropped and resized image to offscreen canvas
+            oCtx.drawImage(img, sx, sy, sw, sh, 0, 0, width, height);
+            return offscreen;
+        } catch (e) {
+            console.warn('Failed to pre-process image, using original:', e);
+            return img;
+        }
+    });
+
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
     const destination = audioContext.createMediaStreamDestination();
 
@@ -178,7 +216,7 @@ export const createVideoFromReelContent = async (
         const imageCount = imageUrls.length;
         const segmentDuration = duration / imageCount;
         const currentImageIndex = Math.min(Math.floor(elapsedTime / segmentDuration), imageCount - 1);
-        const image = imagesOrNulls[currentImageIndex];
+        const image = processedImages[currentImageIndex];
 
         // Safeguard to prevent crash if an image is missing
         if (image) {
@@ -186,27 +224,33 @@ export const createVideoFromReelContent = async (
             const panRange = 0.08;
             const panAmount = -panRange + (2 * panRange * progress);
 
-            const imgRatio = image.width / image.height;
-            const canvasRatio = width / height;
-            let sw, sh, sx, sy;
-
-            if (imgRatio > canvasRatio) {
-                sh = image.height;
-                sw = sh * canvasRatio;
-                sx = (image.width - sw) / 2;
-                sy = 0;
-            } else {
-                sw = image.width;
-                sh = sw / canvasRatio;
-                sx = 0;
-                sy = (image.height - sh) / 2;
-            }
-
             ctx.save();
             ctx.translate(width / 2, height / 2);
             ctx.scale(scale, scale);
             ctx.translate(panAmount * width, panAmount * height);
-            ctx.drawImage(image, sx, sy, sw, sh, -width / 2, -height / 2, width, height);
+
+            // Draw the pre-processed image (which is already 1080p/720p)
+            // If it's the original image (fallback), we let the browser handle scaling (slower)
+            if (image instanceof HTMLCanvasElement) {
+                ctx.drawImage(image, 0, 0, width, height, -width / 2, -height / 2, width, height);
+            } else {
+                // Fallback for raw processing if pre-process failed
+                const imgRatio = image.width / image.height;
+                const canvasRatio = width / height;
+                let sw, sh, sx, sy;
+                if (imgRatio > canvasRatio) {
+                    sh = image.height;
+                    sw = sh * canvasRatio;
+                    sx = (image.width - sw) / 2;
+                    sy = 0;
+                } else {
+                    sw = image.width;
+                    sh = sw / canvasRatio;
+                    sx = 0;
+                    sy = (image.height - sh) / 2;
+                }
+                ctx.drawImage(image, sx, sy, sw, sh, -width / 2, -height / 2, width, height);
+            }
             ctx.restore();
         }
 

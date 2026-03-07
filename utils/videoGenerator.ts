@@ -265,7 +265,6 @@ export const createVideoFromReelContent = async (
 
         // Add 0.5s buffer to ensure video doesn't cut off early (audio longer than video fix)
         if (elapsedTime >= duration + 0.5 || recorder.state !== 'recording') {
-            clearInterval(frameTimer);
             if (recorder.state === 'recording') {
                 recorder.stop();
             }
@@ -417,7 +416,16 @@ export const createVideoFromReelContent = async (
         ctx.restore();
     };
 
-    const frameTimer = setInterval(drawFrame, frameInterval);
+    const loopFrame = () => {
+        drawFrame();
+        // If still recording and not yet finished, schedule the next frame
+        if (recorder.state === 'recording' && (audioContext.currentTime - audioStartTime) < duration + 0.5) {
+            setTimeout(loopFrame, frameInterval);
+        }
+    };
+
+    // Start the loop
+    setTimeout(loopFrame, 0);
 
     return recordingPromise;
 };

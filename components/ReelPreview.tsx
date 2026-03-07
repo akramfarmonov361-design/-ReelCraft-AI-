@@ -57,7 +57,14 @@ export const ReelPreview: React.FC<ReelPreviewProps> = ({ imageUrls, audioB64, t
     if (!audioContextRef.current || !isPlayingRef.current || durationRef.current === 0) return;
 
     const elapsedTime = audioContextRef.current.currentTime - playbackStartTimeRef.current;
-    setPlaybackTime(elapsedTime);
+
+    // Throttle playbackTime updates to ~30fps to reduce React re-rendering overhead
+    setPlaybackTime(prev => {
+      if (Math.abs(elapsedTime - prev) > 0.033) {
+        return elapsedTime;
+      }
+      return prev;
+    });
 
     // Dynamically update image based on playback progress
     const urls = imageUrlsRef.current;

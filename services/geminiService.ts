@@ -128,10 +128,11 @@ USLUB (Mavzuga qarab o'zingiz tanlang):
 - Agar mavzu bayram, tabrik yoki xursandchilik bo'lsa: Samimiy, ilhomlantiruvchi va yorqin uslubda yozing. Rasm tavsiflari ham "yorqin yorug'lik, issiq ranglar, quvonchli atmosfera" ni aks ettirsin.
 - Agar mavzu ta'lim yoki faktlar bo'lsa: Qiziqarli va ob'ektiv yozing.
 - Agar mavzu sirli, tarixiy yoki chuqur motivatsiya bo'lsa: "Deep Motivation" yoki "Dark Psychology" uslubida, sirli va epik yozing.
+YONDASHUV: Har doim realistik nuqtai nazardan yondoshing. Abstrakt, o'ta bo'rttirilgan, fantastik yoki g'ayritabiiy o'xshatishlardan qoching (masalan, beton orasidan chiqqan gul, osmondagi ulkan toj va hokazo keraksiz). Hayotiy va haqiqiy kadrlar yozing.
 QOIDA: Qisqa gaplar va e'tiborni tortuvchi tuzilish. EMOJI YO'Q. Faqat matn. O'ZBEK TILIDA YOZING.`,
                 jsonInstruction: skipImagePrompts
                     ? `Javob faqat JSON: { "script": ["Gap 1...", ...], "hashtags": ["#tag1", ...] }`
-                    : `Javob faqat JSON: { "script": ["Gap 1...", ...], "imagePrompts": ["Mavzu hissiyotiga mos inglizcha rasm tavsifi 1", ...], "hashtags": ["#tag1", ...] }`,
+                    : `Javob faqat JSON: { "script": ["Gap 1...", ...], "imagePrompts": ["Mavzu hissiyotiga mos, REALISTIK va hayotiy inglizcha rasm tavsifi (photorealistic, natural) 1", ...], "hashtags": ["#tag1", ...] }`,
                 topicPrefix: 'Mavzu',
             },
             ru: {
@@ -147,10 +148,11 @@ QOIDA: Qisqa gaplar va e'tiborni tortuvchi tuzilish. EMOJI YO'Q. Faqat matn. O'Z
 - Если праздник или поздравление: Искренний, вдохновляющий и светлый стиль. Описания картинок должны передавать "яркий свет, теплые цвета, радостную атмосферу".
 - Если образование или факты: Увлекательно и объективно.
 - Если тайна, история или глубокая мотивация: Стиль "Deep Motivation" или "Dark Psychology", эпично и таинственно.
+ПОДХОД: Всегда используйте реалистичный подход. Избегайте абстрактных, чрезмерно преувеличенных, фантастических метафор. Описывайте жизненные и реальные кадры.
 ПРАВИЛА: Короткие предложения и цепляющая структура. БЕЗ ЭМОДЗИ. Только текст. ПИШИТЕ НА РУССКОМ ЯЗЫКЕ.`,
                 jsonInstruction: skipImagePrompts
                     ? `Ответ только в JSON: { "script": ["Предложение 1...", ...], "hashtags": ["#тег1", ...] }`
-                    : `Ответ только в JSON: { "script": ["Предложение 1...", ...], "imagePrompts": ["Английское описание картинки, подходящее по эмоции 1", ...], "hashtags": ["#тег1", ...] }`,
+                    : `Ответ только в JSON: { "script": ["Предложение 1...", ...], "imagePrompts": ["Реалистичное жизненное описание картинки на английском (photorealistic, natural) 1", ...], "hashtags": ["#тег1", ...] }`,
                 topicPrefix: 'Тема',
             },
             en: {
@@ -166,10 +168,11 @@ STYLE (Choose based on the topic):
 - If it's a celebration or greeting: Sincere, inspiring, and bright. Image prompts must reflect "bright lighting, warm colors, joyful atmosphere".
 - If educational or facts: Engaging and objective.
 - If mystery, history, or deep motivation: "Deep Motivation" or "Dark Psychology" style, epic and mysterious.
+APPROACH: Always use a realistic perspective. Avoid abstract, overly exaggerated, or fantastical metaphors (e.g. no glowing floating crowns or roses growing from concrete). Focus on authentic, real-world imagery and narrative.
 RULES: Short sentences, engaging structure. NO EMOJIS. Text only. WRITE IN ENGLISH.`,
                 jsonInstruction: skipImagePrompts
                     ? `Response must be JSON only: { "script": ["Sentence 1...", ...], "hashtags": ["#tag1", ...] }`
-                    : `Response must be JSON only: { "script": ["Sentence 1...", ...], "imagePrompts": ["English image prompt matching exactly the topic's emotion 1", ...], "hashtags": ["#tag1", ...] }`,
+                    : `Response must be JSON only: { "script": ["Sentence 1...", ...], "imagePrompts": ["Realistic, real-world English image prompt (photorealistic, authentic) 1", ...], "hashtags": ["#tag1", ...] }`,
                 topicPrefix: 'Topic',
             },
         };

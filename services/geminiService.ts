@@ -123,12 +123,15 @@ TUZILISH: 1. Hook, 2. 3 ta savol (Oson, O'rtacha, Qiyin), 3. Javobdan oldin pauz
 EMOJI YO'Q. Faqat matn. O'ZBEK TILIDA YOZING.`,
                 mainPrompt: `Siz Instagram Reels va YouTube Shorts uchun professional ssenariy muallifisiz.
 Mavzu: '${topic}'.
-MAQSAD: Ushbu video VIRAL bo'lishi kerak. Uslub: "Deep Motivation" yoki "Dark Psychology". 
-Qoidalar: Qisqa gaplar, kutilmagan haqiqatlar, kuchli yakuniy zarba.
-EMOJI YO'Q. Faqat matn. O'ZBEK TILIDA YOZING.`,
+MAQSAD: Video VIRAL bo'lishi va mavzuga mos his-tuyg'uni berishi kerak.
+USLUB (Mavzuga qarab o'zingiz tanlang):
+- Agar mavzu bayram, tabrik yoki xursandchilik bo'lsa: Samimiy, ilhomlantiruvchi va yorqin uslubda yozing. Rasm tavsiflari ham "yorqin yorug'lik, issiq ranglar, quvonchli atmosfera" ni aks ettirsin.
+- Agar mavzu ta'lim yoki faktlar bo'lsa: Qiziqarli va ob'ektiv yozing.
+- Agar mavzu sirli, tarixiy yoki chuqur motivatsiya bo'lsa: "Deep Motivation" yoki "Dark Psychology" uslubida, sirli va epik yozing.
+QOIDA: Qisqa gaplar va e'tiborni tortuvchi tuzilish. EMOJI YO'Q. Faqat matn. O'ZBEK TILIDA YOZING.`,
                 jsonInstruction: skipImagePrompts
                     ? `Javob faqat JSON: { "script": ["Gap 1...", ...], "hashtags": ["#tag1", ...] }`
-                    : `Javob faqat JSON: { "script": ["Gap 1...", ...], "imagePrompts": ["Prompt 1", ...], "hashtags": ["#tag1", ...] }`,
+                    : `Javob faqat JSON: { "script": ["Gap 1...", ...], "imagePrompts": ["Mavzu hissiyotiga mos inglizcha rasm tavsifi 1", ...], "hashtags": ["#tag1", ...] }`,
                 topicPrefix: 'Mavzu',
             },
             ru: {
@@ -139,12 +142,15 @@ EMOJI YO'Q. Faqat matn. O'ZBEK TILIDA YOZING.`,
 БЕЗ ЭМОДЗИ. Только текст. ПИШИТЕ НА РУССКОМ ЯЗЫКЕ.`,
                 mainPrompt: `Вы профессиональный сценарист для Instagram Reels и YouTube Shorts.
 Тема: '${topic}'.
-ЦЕЛЬ: Видео должно стать ВИРУСНЫМ. Стиль: "Deep Motivation" или "Dark Psychology".
-Правила: Короткие предложения, неожиданные факты, мощная концовка.
-БЕЗ ЭМОДЗИ. Только текст. ПИШИТЕ НА РУССКОМ ЯЗЫКЕ.`,
+ЦЕЛЬ: Видео должно стать ВИРУСНЫМ и передавать правильную эмоцию темы.
+СТИЛЬ (выберите в зависимости от темы):
+- Если праздник или поздравление: Искренний, вдохновляющий и светлый стиль. Описания картинок должны передавать "яркий свет, теплые цвета, радостную атмосферу".
+- Если образование или факты: Увлекательно и объективно.
+- Если тайна, история или глубокая мотивация: Стиль "Deep Motivation" или "Dark Psychology", эпично и таинственно.
+ПРАВИЛА: Короткие предложения и цепляющая структура. БЕЗ ЭМОДЗИ. Только текст. ПИШИТЕ НА РУССКОМ ЯЗЫКЕ.`,
                 jsonInstruction: skipImagePrompts
                     ? `Ответ только в JSON: { "script": ["Предложение 1...", ...], "hashtags": ["#тег1", ...] }`
-                    : `Ответ только в JSON: { "script": ["Предложение 1...", ...], "imagePrompts": ["Prompt 1", ...], "hashtags": ["#тег1", ...] }`,
+                    : `Ответ только в JSON: { "script": ["Предложение 1...", ...], "imagePrompts": ["Английское описание картинки, подходящее по эмоции 1", ...], "hashtags": ["#тег1", ...] }`,
                 topicPrefix: 'Тема',
             },
             en: {
@@ -155,12 +161,15 @@ STRUCTURE: 1. Hook, 2. 3 questions (Easy, Medium, Hard), 3. Pause before answer,
 NO EMOJIS. Text only. WRITE IN ENGLISH.`,
                 mainPrompt: `You are a professional scriptwriter for Instagram Reels and YouTube Shorts.
 Topic: '${topic}'.
-GOAL: This video MUST go VIRAL. Style: "Deep Motivation" or "Dark Psychology".
-Rules: Short sentences, unexpected facts, powerful ending.
-NO EMOJIS. Text only. WRITE IN ENGLISH.`,
+GOAL: This video MUST go VIRAL and match the exact emotion of the topic.
+STYLE (Choose based on the topic):
+- If it's a celebration or greeting: Sincere, inspiring, and bright. Image prompts must reflect "bright lighting, warm colors, joyful atmosphere".
+- If educational or facts: Engaging and objective.
+- If mystery, history, or deep motivation: "Deep Motivation" or "Dark Psychology" style, epic and mysterious.
+RULES: Short sentences, engaging structure. NO EMOJIS. Text only. WRITE IN ENGLISH.`,
                 jsonInstruction: skipImagePrompts
                     ? `Response must be JSON only: { "script": ["Sentence 1...", ...], "hashtags": ["#tag1", ...] }`
-                    : `Response must be JSON only: { "script": ["Sentence 1...", ...], "imagePrompts": ["Prompt 1", ...], "hashtags": ["#tag1", ...] }`,
+                    : `Response must be JSON only: { "script": ["Sentence 1...", ...], "imagePrompts": ["English image prompt matching exactly the topic's emotion 1", ...], "hashtags": ["#tag1", ...] }`,
                 topicPrefix: 'Topic',
             },
         };

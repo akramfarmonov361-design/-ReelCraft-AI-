@@ -249,10 +249,9 @@ export const createVideoFromReelContent = async (
     // Capture actual start time — audioContext.currentTime doesn't start at 0
     const audioStartTime = audioContext.currentTime;
 
-    // Use setInterval instead of requestAnimationFrame
-    // rAF pauses when tab is inactive, causing stuttering in recorded video
-    const FPS = 30;
-    const frameInterval = 1000 / FPS;
+    // We use requestAnimationFrame which renders at 60fps (or display refresh rate).
+    // The canvas captures at 30fps internally via captureStream(30), but feeding it
+    // exactly calculated positional data per rAF fire ensures perfectly smooth movement.
 
     // Cache for subtitle layout to avoid expensive measureText every frame
     let lastSubtitleChunk: TimedScriptChunk | null = null;
@@ -415,17 +414,23 @@ export const createVideoFromReelContent = async (
         }
         ctx.restore();
     };
+    let animationFrameId: number;
 
     const loopFrame = () => {
         drawFrame();
         // If still recording and not yet finished, schedule the next frame
         if (recorder.state === 'recording' && (audioContext.currentTime - audioStartTime) < duration + 0.5) {
-            setTimeout(loopFrame, frameInterval);
+            animationFrameId = requestAnimationFrame(loopFrame);
         }
     };
 
     // Start the loop
-    setTimeout(loopFrame, 0);
+    animationFrameId = requestAnimationFrame(loopFrame);
+
+    // Make sure we cancel the rAF loop if recording stops early via recorder.onstop logic not hitting this
+    recorder.addEventListener('stop', () => {
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    });
 
     return recordingPromise;
 };

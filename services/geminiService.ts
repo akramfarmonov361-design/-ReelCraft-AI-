@@ -124,6 +124,7 @@ EMOJI YO'Q. Faqat matn. O'ZBEK TILIDA YOZING.`,
                 mainPrompt: `Siz Instagram Reels va YouTube Shorts uchun professional ssenariy muallifisiz.
 Mavzu: '${topic}'.
 MAQSAD: Video VIRAL bo'lishi va mavzuga mos his-tuyg'uni berishi kerak.
+MUHIM QOIDA (MATNNI O'ZGARTIRMASLIK): Agar yuqoridagi 'Mavzu' qismida qisqa mavzu yozilmasdan, to'liq tayyor she'r, monolog yoki matn berilgan bo'lsa (masalan bir nechta gaplardan iborat), bu matnni ASLO O'ZGARTIRMANG! Uni so'zma-so'z, o'z holicha olib, faqatgina gaplarga bo'lib "script" qatoriga yozing va unga mos rasmlarni o'ylab toping.
 USLUB (Mavzuga qarab o'zingiz tanlang):
 - Agar mavzu bayram, tabrik yoki xursandchilik bo'lsa: Samimiy, ilhomlantiruvchi va yorqin uslubda yozing. Rasm tavsiflari ham "yorqin yorug'lik, issiq ranglar, quvonchli atmosfera" ni aks ettirsin.
 - Agar mavzu ta'lim yoki faktlar bo'lsa: Qiziqarli va ob'ektiv yozing.
@@ -144,6 +145,7 @@ QOIDA: Qisqa gaplar va e'tiborni tortuvchi tuzilish. EMOJI YO'Q. Faqat matn. O'Z
                 mainPrompt: `Вы профессиональный сценарист для Instagram Reels и YouTube Shorts.
 Тема: '${topic}'.
 ЦЕЛЬ: Видео должно стать ВИРУСНЫМ и передавать правильную эмоцию темы.
+ВАЖНОЕ ПРАВИЛО (НЕ ИЗМЕНЯТЬ ТЕКСТ): Если в поле 'Тема' передан не короткий топик, а готовый полный текст (стих, монолог, статья), КАТЕГОРИЧЕСКИ ЗАПРЕЩАЕТСЯ его менять! Просто разбейте этот текст на предложения для поля "script" слово в слово и подберите подходящие картинки.
 СТИЛЬ (выберите в зависимости от темы):
 - Если праздник или поздравление: Искренний, вдохновляющий и светлый стиль. Описания картинок должны передавать "яркий свет, теплые цвета, радостную атмосферу".
 - Если образование или факты: Увлекательно и объективно.
@@ -164,6 +166,7 @@ NO EMOJIS. Text only. WRITE IN ENGLISH.`,
                 mainPrompt: `You are a professional scriptwriter for Instagram Reels and YouTube Shorts.
 Topic: '${topic}'.
 GOAL: This video MUST go VIRAL and match the exact emotion of the topic.
+IMPORTANT RULE (DO NOT EDIT TEXT): If the 'Topic' above is actually a full, ready-made text/script (like a poem or paragraph) instead of a short topic, DO NOT REWRITE OR CHANGE IT! Just split the verbatim text into sentences for the "script" array and generate matching image prompts.
 STYLE (Choose based on the topic):
 - If it's a celebration or greeting: Sincere, inspiring, and bright. Image prompts must reflect "bright lighting, warm colors, joyful atmosphere".
 - If educational or facts: Engaging and objective.
